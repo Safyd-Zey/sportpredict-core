@@ -1,7 +1,7 @@
 # SportPredict Core
 
-[![CI](https://github.com/USERNAME/sportpredict-core/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/sportpredict-core/actions/workflows/ci.yml)
-[![Release](https://github.com/USERNAME/sportpredict-core/actions/workflows/release.yml/badge.svg)](https://github.com/USERNAME/sportpredict-core/actions/workflows/release.yml)
+[![CI](https://github.com/Safyd-Zey/sportpredict-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Safyd-Zey/sportpredict-core/actions/workflows/ci.yml)
+[![Release](https://github.com/Safyd-Zey/sportpredict-core/actions/workflows/release.yml/badge.svg)](https://github.com/Safyd-Zey/sportpredict-core/actions/workflows/release.yml)
 ![Python](https://img.shields.io/badge/python-3.10%E2%80%933.13-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -33,13 +33,13 @@ The same command runs in CI on every push to `main`; metrics appear in the job s
 ## Installation
 
 ```bash
-git clone https://github.com/USERNAME/sportpredict-core.git
+git clone https://github.com/Safyd-Zey/sportpredict-core.git
 cd sportpredict-core
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 ```
 
-Or install a released wheel from the [Releases](https://github.com/USERNAME/sportpredict-core/releases) page.
+Or install a released wheel from the [Releases](https://github.com/Safyd-Zey/sportpredict-core/releases) page.
 
 ## Usage
 
@@ -92,7 +92,7 @@ data/               sample_matches.csv (2016–2025 subset for tests and offline
 
 ## Known limitations
 
-See [issues](https://github.com/USERNAME/sportpredict-core/issues). Most notably, the ordered logit
+See [issues](https://github.com/Safyd-Zey/sportpredict-core/issues). Most notably, the ordered logit
 never makes *draw* the most likely outcome (max P(draw) ≈ 0.31), which caps accuracy; a
 draw-inflated model is on the roadmap.
 
