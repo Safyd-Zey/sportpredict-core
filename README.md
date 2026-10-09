@@ -57,6 +57,12 @@ res = backtest(load_matches(), train_start="2010-01-01", test_start="2022-01-01"
 print(res.metrics["elo_ordered_logit"])
 ```
 
+### Quickstart example
+
+```bash
+python examples/quickstart.py "Kazakhstan" "Norway"
+```
+
 ## Method
 
 1. **Data** – [`martj42/international_results`](https://github.com/martj42/international_results)
