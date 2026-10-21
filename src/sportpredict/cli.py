@@ -1,4 +1,4 @@
-"""Command-line interface: ``sportpredict backtest`` and ``sportpredict ratings``."""
+"""Command-line interface: ``sportpredict backtest``, ``ratings`` and ``serve``."""
 
 from __future__ import annotations
 
@@ -42,6 +42,15 @@ def _cmd_ratings(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_serve(args: argparse.Namespace) -> int:  # pragma: no cover - starts a server
+    import uvicorn
+
+    from sportpredict.api import create_app
+
+    uvicorn.run(create_app(args.data), host=args.host, port=args.port)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="sportpredict", description=__doc__)
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -58,6 +67,12 @@ def build_parser() -> argparse.ArgumentParser:
     rt.add_argument("--data", default=DATASET_URL, help="CSV path or URL")
     rt.add_argument("--top", type=int, default=10)
     rt.set_defaults(func=_cmd_ratings)
+
+    sv = sub.add_parser("serve", help="run the REST API (requires the 'api' extra)")
+    sv.add_argument("--data", default=None, help="CSV path or URL (default: $SPORTPREDICT_DATA)")
+    sv.add_argument("--host", default="127.0.0.1")
+    sv.add_argument("--port", type=int, default=8000)
+    sv.set_defaults(func=_cmd_serve)
     return parser
 
 
