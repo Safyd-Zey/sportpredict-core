@@ -1,0 +1,83 @@
+# SportPredict API on Kubernetes: 2 replicas, rolling update, probes on /health.
+# The Jenkinsfile replaces the image tag with the commit being deployed.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sportpredict
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sportpredict-api
+  namespace: sportpredict
+  labels:
+    app: sportpredict-api
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: sportpredict-api
+  template:
+    metadata:
+      labels:
+        app: sportpredict-api
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: sportpredict-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 192Mi
+            limits:
+              cpu: "1"
+              memory: 384Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sportpredict-api
+  namespace: sportpredict
+spec:
+  type: NodePort
+  selector:
+    app: sportpredict-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30080
