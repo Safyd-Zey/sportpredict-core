@@ -1,0 +1,31 @@
+# Local Jenkins controller. Start with:  bash jenkins/setup.sh
+services:
+  jenkins:
+    build: .
+    image: sportpredict-jenkins:2.580.1
+    container_name: sportpredict-jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    # Pipeline steps call the host Docker daemon (docker-outside-of-docker).
+    group_add:
+      - "${DOCKER_GID:?set DOCKER_GID in jenkins/.env}"
+    environment:
+      JENKINS_ADMIN_ID: admin
+      JENKINS_ADMIN_PASSWORD: "${JENKINS_ADMIN_PASSWORD:?set JENKINS_ADMIN_PASSWORD in jenkins/.env}"
+      KIND_CLUSTER: "${KIND_CLUSTER:-}"
+      DOCKERHUB_REPO: "${DOCKERHUB_REPO:-}"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./secrets/kubeconfig:/run/secrets/kubeconfig:ro
+    networks:
+      - default
+      - kind
+
+networks:
+  kind:
+    external: true
+
+volumes:
+  jenkins_home:
