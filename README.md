@@ -57,6 +57,46 @@ res = backtest(load_matches(), train_start="2010-01-01", test_start="2022-01-01"
 print(res.metrics["elo_ordered_logit"])
 ```
 
+### REST API
+
+```bash
+pip install -e ".[api]"
+sportpredict serve --port 8000
+curl "localhost:8000/v1/predict?home=Kazakhstan&away=Norway"
+```
+
+Endpoints: `GET /health`, `GET /v1/ratings?top=10`, `GET /v1/predict?home=…&away=…&neutral=false`;
+interactive docs at `/docs`.
+
+## Docker, Jenkins and Kubernetes
+
+```bash
+docker build -t sportpredict-api .            # BuildKit; the dataset is verified by SHA-256
+docker run -p 8000:8000 sportpredict-api
+```
+
+The image is a multi-stage build (wheel in a builder stage, slim runtime), runs as a non-root user
+and has a `HEALTHCHECK` on `/health`.
+
+**CI/CD with Jenkins.** [`Jenkinsfile`](Jenkinsfile) runs on every commit of every branch:
+checkout → quality gates in parallel (Ruff, pytest with JUnit and coverage reports, hadolint) →
+Docker image build → smoke test of the container. Commits to `main` are additionally pushed to
+Docker Hub (if `DOCKERHUB_REPO` and the `dockerhub` credential are set) and deployed to a local
+Kubernetes cluster ([kind](https://kind.sigs.k8s.io/)) with a rolling update, a smoke test through
+the Service and an automatic rollback on failure.
+
+The Jenkins controller is reproducible from code ([`jenkins/`](jenkins/)): pinned LTS image,
+plugin list, Configuration as Code and a Job DSL multibranch job. One command starts the lab:
+
+```bash
+bash jenkins/setup.sh      # needs Docker with buildx, kind and kubectl
+# Jenkins: http://localhost:8080 (admin, password in jenkins/.env)
+# API after the first deployment of main: http://localhost:30080/health
+```
+
+GitHub Actions ([`ci.yml`](.github/workflows/ci.yml)) keeps the cross-platform test matrix and
+releases; Jenkins covers containerisation and deployment.
+
 ### Quickstart example
 
 ```bash
@@ -78,10 +118,12 @@ python examples/quickstart.py "Kazakhstan" "Norway"
 ## Project structure
 
 ```
-src/sportpredict/   data.py  elo.py  model.py  metrics.py  backtest.py  plots.py  cli.py
+src/sportpredict/   data.py  elo.py  model.py  metrics.py  backtest.py  plots.py  cli.py  api.py
 tests/              unit and integration tests (pytest, coverage >= 85 % enforced)
 data/               sample_matches.csv (2016–2025 subset for tests and offline runs)
 .github/workflows/  ci.yml (lint → test matrix → build, reproduce)  release.yml (tag → Release)
+Dockerfile          API image;  Jenkinsfile: CI/CD pipeline;  jenkins/: controller as code
+k8s/                Deployment + Service for the API
 ```
 
 ## Technology choices

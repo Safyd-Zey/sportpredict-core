@@ -4,7 +4,7 @@ title: "SportPredict Core: point-in-time Elo ratings and probabilistic football 
 authors:
   - family-names: Zeitkazy
     given-names: Sayat
-version: 0.1.0
-date-released: 2026-10-09
+version: 0.2.0
+date-released: 2026-10-21
 license: MIT
 repository-code: "https://github.com/Safyd-Zey/sportpredict-core"
