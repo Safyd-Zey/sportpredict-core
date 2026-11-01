@@ -1,6 +1,6 @@
 # Jenkins controller for the SportPredict pipeline: LTS core, plugins and
 # configuration as code, plus the Docker CLI, kubectl and kind used by the Jenkinsfile.
-FROM jenkins/jenkins:2.580.1-lts-jdk21
+FROM jenkins/jenkins:2.580.2-lts-jdk21
 
 USER root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
